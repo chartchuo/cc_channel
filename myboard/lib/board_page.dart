@@ -1,38 +1,6 @@
 import 'package:flutter/material.dart';
-
+import 'package:dart_nats/dart_nats.dart' as nats;
 import 'model.dart';
-
-const mockJson = '''
-{"id":"1","name":"sample board","items":[
-  {"name":"item0","status":"Done"},
-  {"name":"item1","status":"Done"},
-  {"name":"item2","status":"Done"},
-  {"name":"item3","status":"Done"},
-  {"name":"item4","status":"Done"},
-  {"name":"item5","status":"Ontime"},
-  {"name":"item6","status":"Ontime"},
-  {"name":"item7","status":"Ontime"},
-  {"name":"item8","status":"Ontime"},
-  {"name":"item9","status":"Ontime"},
-  {"name":"item10","status":"Delay"},
-  {"name":"item11","status":"Delay"},
-  {"name":"item12","status":"Delay"},
-  {"name":"item13","status":"Delay"},
-  {"name":"item14","status":"Delay"},
-  {"name":"item15","status":"Stop"},
-  {"name":"item16","status":"Stop"},
-  {"name":"item17","status":"Stop"},
-  {"name":"item18","status":"Stop"},
-  {"name":"item19","status":"Stop"},
-  {"name":"item20","status":"-"},
-  {"name":"item21","status":"-"},
-  {"name":"item22","status":"-"},
-  {"name":"item23","status":"-"},
-  {"name":"item24","status":"-"}
-]}
-''';
-
-var board = Board.fromJsonString(mockJson);
 
 extension BoardItemWidget on BoardItem {
   Color get statusColor {
@@ -82,11 +50,35 @@ class BoardPage extends StatefulWidget {
 }
 
 class _BoardPageState extends State<BoardPage> {
+  var client = nats.Client();
+  nats.Subscription sub;
+
+  @override
+  void initState() {
+    super.initState();
+    client.connect('10.0.2.2');
+    sub = client.sub('byBoard');
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      // appBar: AppBar(),
-      body: board.widget(),
+      body: StreamBuilder(
+        stream: sub.stream,
+        builder: (c, AsyncSnapshot<nats.Message> snapshot) {
+          if (!snapshot.hasData) {
+            return Text('NO data');
+          }
+          return Board.fromJsonString(snapshot.data.string).widget();
+        },
+      ),
     );
+  }
+
+  @override
+  void dispose() {
+    sub.unSub();
+    client.close();
+    super.dispose();
   }
 }

@@ -12,7 +12,7 @@ dependencies:
 
   cupertino_icons: ^0.1.2
   json_annotation: ^3.0.1
-  dart_nats: ^0.1.6
+  dart_nats: ^0.1.7
 
 dev_dependencies:
   flutter_test:
