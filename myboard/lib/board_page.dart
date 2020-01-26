@@ -3,31 +3,29 @@ import 'package:myboard/model.dart';
 import 'package:dart_nats/dart_nats.dart' as nats;
 
 extension BoardItemWidget on BoardItem {
-  Widget get w {
-    Color statusColor;
+  Color get color {
     switch (status) {
       case 'Done':
-        statusColor = Colors.green;
-        break;
+        return Colors.green;
       case 'Ontime':
-        statusColor = Colors.blue;
-        break;
+        return Colors.blue;
       case 'Delay':
-        statusColor = Colors.orange;
-        break;
+        return Colors.orange;
       case 'Stop':
-        statusColor = Colors.red;
-        break;
+        return Colors.red;
       default:
-        statusColor = Colors.black;
+        return Colors.black;
     }
+  }
+
+  Widget get w {
     return ListTile(
       title: Text(
         this.name,
       ),
-      trailing: Text(this.status, style: TextStyle(color: statusColor)),
+      trailing: Text(this.status, style: TextStyle(color: color)),
       leading: CircleAvatar(
-        backgroundColor: statusColor,
+        backgroundColor: color,
       ),
     );
   }
