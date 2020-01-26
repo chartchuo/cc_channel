@@ -1,9 +1,44 @@
-import 'dart:convert';
+import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'board_page.dart';
+import 'home_page.dart';
+import 'package:dart_nats/dart_nats.dart' as nats;
+
 import 'model.dart';
 
-void main() {
+Board mockBoard() {
+  Board b;
+  b = Board.fromJsonString('{"id":"1","name":"sample board","items":[]}');
+  int n = 0;
+  for (var i = 0; i < 5; i++, n++) {
+    b.items.add(BoardItem.fromJsonString('{"name":"item$n","status":"Done"}'));
+  }
+  for (var i = 0; i < 5; i++, n++) {
+    b.items
+        .add(BoardItem.fromJsonString('{"name":"item$n","status":"Ontime"}'));
+  }
+  for (var i = 0; i < 5; i++, n++) {
+    b.items.add(BoardItem.fromJsonString('{"name":"item$n","status":"Delay"}'));
+  }
+  for (var i = 0; i < 5; i++, n++) {
+    b.items.add(BoardItem.fromJsonString('{"name":"item$n","status":"Stop"}'));
+  }
+  for (var i = 0; i < 5; i++, n++) {
+    b.items.add(BoardItem.fromJsonString('{"name":"item$n","status":"-"}'));
+  }
+
+  return b;
+}
+
+void main() async {
+  var board = mockBoard();
+
+  var server = nats.Client();
+  await server.connect('10.0.2.2');
+  Timer.periodic(Duration(seconds: 5), (t) {
+    server.pubString('mockboard', board.toJsonString());
+  });
   runApp(MyApp());
 }
 
@@ -15,54 +50,7 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         primarySwatch: Colors.blue,
       ),
-      home: MyHomePage(title: 'Flutter Demo Home Page'),
-    );
-  }
-}
-
-class MyHomePage extends StatefulWidget {
-  MyHomePage({Key key, this.title}) : super(key: key);
-
-  final String title;
-
-  @override
-  _MyHomePageState createState() => _MyHomePageState();
-}
-
-class _MyHomePageState extends State<MyHomePage> {
-  int _counter = 0;
-
-  void _incrementCounter() {
-    setState(() {
-      _counter++;
-    });
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text(widget.title),
-      ),
-      body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: <Widget>[
-            Text(
-              'You have pushed the button this many times:',
-            ),
-            Text(
-              '$_counter',
-              style: Theme.of(context).textTheme.display1,
-            ),
-          ],
-        ),
-      ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: _incrementCounter,
-        tooltip: 'Increment',
-        child: Icon(Icons.add),
-      ),
+      home: BoardPage(),
     );
   }
 }

@@ -11,5 +11,11 @@ void main() {
       print(jsonEncode(board.toJson()));
       expect(board.toJson(), equals(jsonDecode(str)));
     });
+    test('jsonString', () {
+      var str = '{"id":"123","items":[{"name":"nnn","status":"sss"}]}';
+      var board = Board.fromJsonString(str);
+      print(board.toJsonString());
+      expect(board.toJson(), equals(jsonDecode(str)));
+    });
   });
 }
