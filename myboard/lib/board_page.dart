@@ -26,6 +26,9 @@ extension BoardItemWidget on BoardItem {
         this.name,
       ),
       trailing: Text(this.status, style: TextStyle(color: statusColor)),
+      leading: CircleAvatar(
+        backgroundColor: statusColor,
+      ),
     );
   }
 }

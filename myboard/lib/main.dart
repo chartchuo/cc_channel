@@ -7,37 +7,44 @@ import 'package:dart_nats/dart_nats.dart' as nats;
 
 import 'model.dart';
 
-Board mockBoard() {
-  Board b;
-  b = Board.fromJsonString('{"id":"1","name":"sample board","items":[]}');
-  int n = 0;
-  for (var i = 0; i < 5; i++, n++) {
-    b.items.add(BoardItem.fromJsonString('{"name":"item$n","status":"Done"}'));
-  }
-  for (var i = 0; i < 5; i++, n++) {
-    b.items
-        .add(BoardItem.fromJsonString('{"name":"item$n","status":"Ontime"}'));
-  }
-  for (var i = 0; i < 5; i++, n++) {
-    b.items.add(BoardItem.fromJsonString('{"name":"item$n","status":"Delay"}'));
-  }
-  for (var i = 0; i < 5; i++, n++) {
-    b.items.add(BoardItem.fromJsonString('{"name":"item$n","status":"Stop"}'));
-  }
-  for (var i = 0; i < 5; i++, n++) {
-    b.items.add(BoardItem.fromJsonString('{"name":"item$n","status":"-"}'));
-  }
-
-  return b;
-}
+const mockJson = '''
+{"id":"1","name":"sample board","items":[
+  {"name":"item0","status":"Done"},
+  {"name":"item1","status":"Done"},
+  {"name":"item2","status":"Done"},
+  {"name":"item3","status":"Done"},
+  {"name":"item4","status":"Done"},
+  {"name":"item5","status":"Ontime"},
+  {"name":"item6","status":"Ontime"},
+  {"name":"item7","status":"Ontime"},
+  {"name":"item8","status":"Ontime"},
+  {"name":"item9","status":"Ontime"},
+  {"name":"item10","status":"Delay"},
+  {"name":"item11","status":"Delay"},
+  {"name":"item12","status":"Delay"},
+  {"name":"item13","status":"Delay"},
+  {"name":"item14","status":"Delay"},
+  {"name":"item15","status":"Stop"},
+  {"name":"item16","status":"Stop"},
+  {"name":"item17","status":"Stop"},
+  {"name":"item18","status":"Stop"},
+  {"name":"item19","status":"Stop"},
+  {"name":"item20","status":"-"},
+  {"name":"item21","status":"-"},
+  {"name":"item22","status":"-"},
+  {"name":"item23","status":"-"},
+  {"name":"item24","status":"-"}
+]}
+''';
 
 void main() async {
-  var board = mockBoard();
+  var board = Board.fromJsonString(mockJson);
 
   var server = nats.Client();
   await server.connect('10.0.2.2');
   Timer.periodic(Duration(seconds: 5), (t) {
     server.pubString('mockboard', board.toJsonString());
+    print(board.toJsonString());
   });
   runApp(MyApp());
 }
