@@ -57,7 +57,7 @@ class _BoardPageState extends State<BoardPage> {
   void initState() {
     super.initState();
     client.connect('10.0.2.2');
-    sub = client.sub('byBoard');
+    sub = client.sub('myBoard.1');
   }
 
   @override

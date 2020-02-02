@@ -38,7 +38,7 @@ void main() async {
   var server = nats.Client();
   await server.connect('10.0.2.2');
   Timer.periodic(Duration(seconds: 5), (t) {
-    server.pubString('byBoard', mockJson);
+    server.pubString('myBoard.1', mockJson);
   });
 
   runApp(Myapp());
