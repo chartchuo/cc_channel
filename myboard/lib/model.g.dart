@@ -13,7 +13,10 @@ Board _$BoardFromJson(Map<String, dynamic> json) {
     ..items = (json['items'] as List)
         ?.map((e) =>
             e == null ? null : BoardItem.fromJson(e as Map<String, dynamic>))
-        ?.toList();
+        ?.toList()
+    ..lastUpdate = json['lastUpdate'] == null
+        ? null
+        : DateTime.parse(json['lastUpdate'] as String);
 }
 
 Map<String, dynamic> _$BoardToJson(Board instance) {
@@ -28,6 +31,7 @@ Map<String, dynamic> _$BoardToJson(Board instance) {
   writeNotNull('id', instance.id);
   writeNotNull('name', instance.name);
   writeNotNull('items', instance.items?.map((e) => e?.toJson())?.toList());
+  writeNotNull('lastUpdate', instance.lastUpdate?.toIso8601String());
   return val;
 }
 

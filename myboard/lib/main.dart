@@ -4,6 +4,9 @@ import 'package:flutter/material.dart';
 import 'package:dart_nats/dart_nats.dart' as nats;
 import 'board_page.dart';
 
+import 'bloc/board_bloc.dart';
+import 'model.dart';
+
 const mockJson = '''
 {"id":"1","name":"sample board","items":[
   {"name":"item0","status":"Done"},
@@ -35,10 +38,14 @@ const mockJson = '''
 ''';
 
 void main() async {
-  var server = nats.Client();
-  await server.connect('10.0.2.2');
+  // var server = nats.Client();
+  // await server.connect('10.0.2.2');
+  // Timer.periodic(Duration(seconds: 5), (t) {
+  //   server.pubString('myBoard.1', mockJson);
+  // });
+
   Timer.periodic(Duration(seconds: 5), (t) {
-    server.pubString('myBoard.1', mockJson);
+    boardBloc.add(UpdateBoardEvent(Board.fromJsonString(mockJson)));
   });
 
   runApp(Myapp());

@@ -4,11 +4,15 @@ import 'package:json_annotation/json_annotation.dart';
 
 part 'model.g.dart';
 
+// run this command to generate model.g.dart
+// flutter pub run build_runner build
+
 @JsonSerializable()
 class Board {
   String id;
   String name;
   List<BoardItem> items;
+  DateTime lastUpdate;
   Board();
 
   factory Board.fromJson(Map<String, dynamic> json) => _$BoardFromJson(json);

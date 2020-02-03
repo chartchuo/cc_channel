@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:dart_nats/dart_nats.dart' as nats;
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:myboard/bloc/board_bloc.dart';
 import 'model.dart';
 
 extension BoardItemWidget on BoardItem {
@@ -50,26 +52,30 @@ class BoardPage extends StatefulWidget {
 }
 
 class _BoardPageState extends State<BoardPage> {
-  var client = nats.Client();
-  nats.Subscription sub;
+  // var client = nats.Client();
+  // nats.Subscription sub;
 
   @override
   void initState() {
     super.initState();
-    client.connect('10.0.2.2');
-    sub = client.sub('myBoard.1');
+    // client.connect('10.0.2.2');
+    // sub = client.sub('myBoard.1');
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: StreamBuilder(
-        stream: sub.stream,
-        builder: (c, AsyncSnapshot<nats.Message> snapshot) {
-          if (!snapshot.hasData) {
+      body: BlocBuilder(
+        bloc: boardBloc,
+        builder: (c, state) {
+          if (state is BoardInitial) {
             return Text('NO data');
           }
-          return Board.fromJsonString(snapshot.data.string).widget();
+          if (state is BoardUpdateState) {
+            // return Board.fromJsonString(state.data.string).widget();
+            return state.board.widget();
+          }
+          return Text('Unknow state type');
         },
       ),
     );
@@ -77,8 +83,8 @@ class _BoardPageState extends State<BoardPage> {
 
   @override
   void dispose() {
-    sub.unSub();
-    client.close();
+    // sub.unSub();
+    // client.close();
     super.dispose();
   }
 }
